@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const express = require("express");
 const bodyParser = require("body-parser");
 const encoder = bodyParser.urlencoded();
+const port = process.env.PORT || 8080; // Use environment variable for port
 
 const app = express();
 
@@ -14,14 +15,12 @@ const connection = mysql.createConnection({
 
 // connect to the database
 connection.connect(function (error) {
-  if (error) throw error
-  else console.log("Connected to the database successfully")
+  if (error) throw error;
+  else console.log("Connected to the database successfully");
 });
 
-
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html")
-
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.post("/", encoder, function (req, res) {
@@ -30,18 +29,20 @@ app.post("/", encoder, function (req, res) {
 
   connection.query("select * from logininfo where username = ? and password = ?", [username, password], function (error, results, fields) {
     if (results.length > 0) {
-      res.redirect("/profile")
+      res.redirect("/profile");
     } else {
-      res.redirect("/profile")
+      res.redirect("/profile"); // You might want to redirect to a login error page instead
     }
     res.end();
-  })
+  });
 });
-
 
 // successful login
 app.get("/profile", function (req, res) {
-  res.sendFile(__dirname + "/profile.html")
+  res.sendFile(__dirname + "/profile.html");
 });
 
-
+// set app port
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on ${port}`); // Corrected template literal
+});
